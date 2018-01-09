@@ -1,20 +1,48 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<div class="col-md-3">
+  <h3>Select images</h3>
+  <input type="file" accept="image/*" #fileInput multiple (change)="addToQueue()"/>
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://github.com/angular/angular-cli/wiki">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+
+<div class="col-md-9">
+  <h3>Upload queue</h3>
+  <table class="full-width mb-3">
+    <thead>
+    <tr>
+      <th class="text-left">Name</th>
+      <th class="text-right">Size</th>
+      <th class="text-left">Progress</th>
+      <th class="text-left">Status</th>
+      <th class="text-right">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of queue | async">
+      <td>{{ item?.file?.name }}</td>
+      <td class="text-right">{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+      <td>{{ item.progress + ' %' }}</td>
+      <td>
+        <span *ngIf="item.isPending()" class="tag tag-default"></span>
+        <span *ngIf="item.isSuccess()" class="tag tag-success"></span>
+        <span *ngIf="item.inProgress()" class="tag tag-warning"></span>
+        <span *ngIf="item.isError()" class="tag tag-danger"></span>
+      </td>
+      <td class="text-right td-action">
+        <a class="icon-action" tooltip="Upload file" (click)="item.upload()" *ngIf="item.isUploadable()">
+          <i class="icon-up-circled"></i>
+        </a>
+        <a class="icon-action" tooltip="Cancel upload" (click)="item.cancel()" *ngIf="item.inProgress()">
+          <i class="icon-cancel-circled"></i>
+        </a>
+        <a class="icon-action" tooltip="Remove from queue" (click)="item.remove()" *ngIf="!item.inProgress()">
+          <i class="icon-trash-empty"></i>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <div>
+    <button (click)="uploader.uploadAll()">Upload all images</button>
+    <button (click)="uploader.clearQueue()">Clear queue</button>
+  </div>
+</div>
 
