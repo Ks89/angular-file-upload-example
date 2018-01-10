@@ -1,12 +1,12 @@
-var express = require("express");
-var bodyParser = require("body-parser");
+let express = require("express");
+let bodyParser = require("body-parser");
 
-var path  = require('path');
-var http  = require('http');
-var multer  = require('multer');
-var upload = multer({ dest: 'uploads/' });
+let path  = require('path');
+let http  = require('http');
+let multer  = require('multer');
+let upload = multer({ dest: 'uploads/' });
 
-var app = express();
+let app = express();
 
 app.use('/', express.static(path.join(__dirname, 'dist/')));
 
@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use(function (err, req, res, next) {
-  res.send(500, {
+  res.status(500).send({
     status: 500,
     message: 'internal server error'
   });
@@ -29,7 +29,7 @@ app.get("/", function(req, res) {
 });
 
 app.post('/api/nomultipart', function (req, res, next) {
-    var data = new Buffer('');
+    let data = new Buffer('');
     req.on('data', function(chunk) {
       data = Buffer.concat([data, chunk]);
     });
@@ -46,6 +46,10 @@ app.post('/api/multipartformdata', upload.single('file'), function (req, res, ne
 
   console.log(req.file);
   console.log(req.body);
+
+  // to get the file you have to read it from file system using fs.readFileSync
+  // filename and full path is available in req object
+  // you can read that file using a Buffer
 
   res.status(200).send({});
 
